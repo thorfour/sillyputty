@@ -5,7 +5,7 @@ REPO="quay.io/thorfour/sillyputty"
 
 docker:
 	mkdir -p ./bin/docker
-	CGO_ENABLED=0 GOOS=linux go build -o ./bin/docker/$(EXE) ./cmd/server
+	CGO_ENABLED=1 GOOS=linux go build -o ./bin/docker/$(EXE) ./cmd/server
 	cp /etc/ssl/certs/ca-certificates.crt ./bin/docker
 	cp ./build/Dockerfile ./bin/docker
 	docker build ./bin/docker -t $(REPO)

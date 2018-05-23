@@ -80,14 +80,14 @@ func (s *SillyPutty) handler(resp http.ResponseWriter, req *http.Request) {
 	// Load the plugin file
 	plug, err := plugin.Open(s.getPlugin(p))
 	if err != nil {
-		newReponse(resp, "", fmt.Errorf("Command not found"))
+		newReponse(resp, "", fmt.Errorf("Plugin not found: %v", err))
 		return
 	}
 
 	// Lookup the plugin handler
 	f, err := plug.Lookup(s.PluginFuncName)
 	if err != nil {
-		newReponse(resp, "", fmt.Errorf("Command not found"))
+		newReponse(resp, "", fmt.Errorf("Command not found: %v", err))
 		return
 	}
 
