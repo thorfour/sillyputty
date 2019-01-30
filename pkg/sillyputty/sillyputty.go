@@ -1,8 +1,6 @@
 package sillyputty
 
 import (
-	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -44,24 +42,16 @@ func (s *SillyPutty) Run(p int, d bool) {
 	} else {
 		mux := &http.ServeMux{}
 		mux.HandleFunc(s.Path, s.handler)
-		hostPolicy := func(ctx context.Context, host string) error {
-			if host == s.AllowedHost {
-				return nil
-			}
-			return fmt.Errorf("acme/autocert: only %s allowed", s.AllowedHost)
-		}
 		m := &autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
-			HostPolicy: hostPolicy,
+			HostPolicy: autocert.HostWhitelist(s.AllowedHost),
 			Cache:      autocert.DirCache(s.DataDir),
 			Email:      s.SupportEmail,
 		}
 		srv := &http.Server{
-			Handler: mux,
-			Addr:    fmt.Sprintf(":%v", p),
-			TLSConfig: &tls.Config{
-				GetCertificate: m.GetCertificate,
-			},
+			Handler:   mux,
+			Addr:      fmt.Sprintf(":%v", p),
+			TLSConfig: m.TLSConfig(),
 		}
 		go http.ListenAndServe(":80", m.HTTPHandler(nil))
 		log.Fatal(srv.ListenAndServeTLS("", ""))
@@ -121,12 +111,4 @@ func newReponse(resp http.ResponseWriter, message string, err error) {
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Write(b)
 	return
-}
-
-func (s *SillyPutty) hostPolicy(ctx context.Context, host string) error {
-	if host == s.AllowedHost {
-		return nil
-	}
-
-	return fmt.Errorf("acme/autocert: only %s hist is allowed", s.AllowedHost)
 }
