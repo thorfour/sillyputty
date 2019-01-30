@@ -1,7 +1,6 @@
 package sillyputty
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -50,12 +49,9 @@ func (s *SillyPutty) Run(p int, d bool) {
 			Email:      s.SupportEmail,
 		}
 		srv := &http.Server{
-			Handler: mux,
-			Addr:    fmt.Sprintf(":%v", p),
-			TLSConfig: &tls.Config{
-				GetCertificate: m.GetCertificate,
-				TLSConfig:      m.TLSConfig(),
-			},
+			Handler:   mux,
+			Addr:      fmt.Sprintf(":%v", p),
+			TLSConfig: m.TLSConfig(),
 		}
 		go http.ListenAndServe(":80", m.HTTPHandler(nil))
 		log.Fatal(srv.ListenAndServeTLS("", ""))
