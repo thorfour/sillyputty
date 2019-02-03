@@ -3,7 +3,6 @@ package sillyputty
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -12,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
 )
 
@@ -99,7 +99,7 @@ func (s *SillyPutty) Run() {
 		go http.ListenAndServe(":80", m.HTTPHandler(nil))
 		log.Fatal(srv.ListenAndServeTLS("", ""))
 	} else {
-		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", s.Port), nil))
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", s.Port), s.mux))
 	}
 }
 
