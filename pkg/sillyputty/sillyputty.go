@@ -69,7 +69,8 @@ func HandlerOpt(path string, f func(url.Values) (string, error)) func(s *SillyPu
 // New returns a new sillyputty server
 func New(path string, opts ...Option) *SillyPutty {
 	s := &SillyPutty{
-		mux: mux.NewRouter().PathPrefix(path).Subrouter(),
+		mux:  mux.NewRouter().PathPrefix(path).Subrouter(),
+		Port: 80,
 	}
 
 	for _, o := range opts {
