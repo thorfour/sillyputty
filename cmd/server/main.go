@@ -23,13 +23,12 @@ func main() {
 	}
 	log.Printf("%s", *allowedHost)
 	log.Printf("Starting server on port %v", *port)
-	s := &sillyputty.SillyPutty{
-		AllowedHost:    *allowedHost,
-		SupportEmail:   *supportEmail,
-		PluginRoot:     "/plugins",
-		PluginFuncName: "Handler",
-		Path:           "/v1",
-		DataDir:        ".",
-	}
-	s.Run(*port, *debug)
+
+	s := sillyputty.New("/v1",
+		sillyputty.WithTLSOpt(*allowedHost, ".", *supportEmail),
+		sillyputty.PluginHandlerOpt("", "/plugins", "Handler"),
+	)
+
+	s.Port = *port
+	s.Run()
 }
