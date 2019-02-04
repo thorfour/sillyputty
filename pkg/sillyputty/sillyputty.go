@@ -138,6 +138,11 @@ func pluginHandler(root, funcName string) func(resp http.ResponseWriter, req *ht
 // In the event of an error the handler writes the error message as an ephemeral response for slack to print
 func handler(f func(url.Values) (string, error)) func(resp http.ResponseWriter, req *http.Request) {
 	return func(resp http.ResponseWriter, req *http.Request) {
+		if err := req.ParseForm(); err != nil {
+			http.Error(resp, err.Error(), http.StatusBadRequest)
+			return
+		}
+
 		msg, err := f(req.Form)
 		newReponse(resp, msg, err)
 	}
